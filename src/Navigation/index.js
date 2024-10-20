@@ -12,6 +12,7 @@ import ProfileScreen from "../Screens/ProfileScreen";
 import EditProfileScreen from "../Screens/EditProfileScreen";
 import PrescriptionsScreen from "../Screens/PrescriptionsScreen";
 import MedicalRecordsScreen from "../Screens/MedicalRecordsScreen";
+import ForgotPasswordScreen from "../Screens/ForgotPasswordScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,10 @@ const Navigation = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="SigninScreen" component={SigninScreen} />
+        <Stack.Screen
+          name="ForgotPasswordScreen"
+          component={ForgotPasswordScreen}
+        />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen
           name="AppointmentBooking"

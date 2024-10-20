@@ -9,9 +9,6 @@ const EditProfileScreen = ({ route, navigation }) => {
   const [email, setEmail] = useState(userEmail);
 
   const handleSave = () => {
-    // Here you can add code to save the profile data to your backend
-    // For now, let's just pass the updated data back to the Profile screen
-
     navigation.navigate("ProfileScreen", {
       updatedName: name,
       updatedEmail: email,

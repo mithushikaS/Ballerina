@@ -1,5 +1,3 @@
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import React, { useState } from "react";
 import {
   View,
@@ -8,64 +6,23 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  Alert,  // Import Alert for showing alerts
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Animatable from "react-native-animatable";
-import { Picker } from "@react-native-picker/picker";
+import { Ionicons } from "@expo/vector-icons"; 
+import * as Animatable from "react-native-animatable"; 
+import { Picker } from "@react-native-picker/picker"; 
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AuthScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');  
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); 
   const [isSignUp, setIsSignUp] = useState(true); 
-  const [role, setRole] = useState("Patient"); 
+  const [role, setRole] = useState("Patient");
 
-  const handleSignup = async () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert("Missing Information", "Please fill in all the fields.");  // Show alert if any field is empty
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert("Password Mismatch", "Passwords do not match.");  // Show alert for password mismatch
-      return;
-    }
-
-    try {
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-      const user = userCredential.user;
-
-      await user.sendEmailVerification();
-      Alert.alert("Signup Successful", "A verification email has been sent to your email address.");
-
-      await firestore().collection('users').doc(user.uid).set({
-        email: email,
-        role: role,
-      });
-
-      navigation.navigate("HomeScreen");
-    } catch (error) {
-      console.log('Error during sign-up:', error);
-      Alert.alert("Error", "An error occurred during signup. Please try again.");
-    }
+  // Navigate to HomeScreen after Log In or Sign Up
+  const handleLogin = () => {
+    navigation.navigate("HomeScreen");
   };
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Missing Information", "Please fill in both email and password fields.");
-      return;
-    }
-
-    try {
-      await auth().signInWithEmailAndPassword(email, password);
-      Alert.alert("Login Successful", "You have successfully logged in.");
-      navigation.navigate("HomeScreen");
-    } catch (error) {
-      console.log('Error during login:', error);
-      Alert.alert("Login Error", "An error occurred during login. Please check your credentials.");
-    }
+  const handleSignup = () => {
+    navigation.navigate("HomeScreen");
   };
 
   const toggleAuthMode = () => {
@@ -76,6 +33,7 @@ const AuthScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>{isSignUp ? "Sign Up" : "Log In"}</Text>
 
+      {/* Input Fields */}
       {isSignUp && (
         <View style={styles.inputContainer}>
           <Ionicons name="person" size={20} color="#666" style={styles.icon} />
@@ -94,8 +52,6 @@ const AuthScreen = ({ navigation }) => {
           keyboardType="email-address"
           style={styles.input}
           placeholderTextColor="#666"
-          value={email}  
-          onChangeText={(text) => setEmail(text)}
         />
       </View>
 
@@ -111,8 +67,6 @@ const AuthScreen = ({ navigation }) => {
           secureTextEntry={true}
           style={styles.input}
           placeholderTextColor="#666"
-          value={password}  
-          onChangeText={(text) => setPassword(text)}
         />
       </View>
 
@@ -129,12 +83,11 @@ const AuthScreen = ({ navigation }) => {
             secureTextEntry={true}
             style={styles.input}
             placeholderTextColor="#666"
-            value={confirmPassword} 
-            onChangeText={(text) => setConfirmPassword(text)} 
           />
         </View>
       )}
 
+      {/* Role Selection for Sign Up */}
       {isSignUp && (
         <View style={styles.pickerContainer}>
           <Text style={styles.pickerLabel}>Select Role</Text>
@@ -150,24 +103,29 @@ const AuthScreen = ({ navigation }) => {
         </View>
       )}
 
+      {/* Forgot Password for Log In */}
       {!isSignUp && (
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ForgotPasswordScreen")}
+        >
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
       )}
 
+      {/* CTA Button */}
       <Animatable.View animation="fadeInUp" delay={500}>
         <TouchableOpacity
           style={[
             styles.ctaButton,
             isSignUp ? styles.signUpButton : styles.logInButton,
           ]}
-          onPress={isSignUp ? handleSignup : handleLogin}
+          onPress={isSignUp ? handleSignup : handleLogin} // Navigate on press
         >
           <Text style={styles.ctaText}>{isSignUp ? "Sign Up" : "Log In"}</Text>
         </TouchableOpacity>
       </Animatable.View>
 
+      {/* Toggle between Sign Up and Log In */}
       <TouchableOpacity onPress={toggleAuthMode}>
         <Text style={styles.toggleText}>
           {isSignUp
@@ -176,17 +134,18 @@ const AuthScreen = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
 
+      {/* Social Logins */}
       <View style={styles.socialContainer}>
         <TouchableOpacity onPress={() => {}}>
           <Image
-            source={require("../../../assets/google.png")}
+            source={require("../../../assets/google.png")} // Add a Google logo
             style={styles.socialIcon}
           />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => {}}>
           <Image
-            source={require("../../../assets/facebook.png")}
+            source={require("../../../assets/facebook.png")} // Add a Facebook logo
             style={styles.socialIcon}
           />
         </TouchableOpacity>
@@ -194,6 +153,7 @@ const AuthScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -201,7 +161,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     backgroundColor: "#f8f9fa",
-    marginVertical: 10,
+    marginVertical: 30,
   },
   header: {
     fontSize: 32,
@@ -255,6 +215,8 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: "100%",
+    // borderWidth: 1,
+    // borderColor: "#ccc",
   },
   forgotPassword: {
     color: "#1e90ff",
